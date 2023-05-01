@@ -1,6 +1,5 @@
 import Card from 'components/Card'
 import Loader from 'components/Loader'
-import PageTitle from 'components/PageTitle'
 import Separator from 'components/Separator'
 import MasterLayout from 'components/layout/MasterLayout'
 import React, { useEffect, useState } from 'react'
@@ -13,6 +12,7 @@ import InputLabel from 'components/form/InputLabel'
 import { useSubmitJobApplicationMutation } from 'store/apis/user/job-application'
 import { toast } from 'react-toastify'
 import { JobList } from 'components/job/JobList'
+import PageHeader from 'components/PageHeader'
 
 const JobApplicationForm = ({ id, handleOnSubmit, handleCancel }) => {
   const FILE_SIZE = 1024 * 1024 * 2; // 2 MB
@@ -72,7 +72,7 @@ const JobApplicationForm = ({ id, handleOnSubmit, handleCancel }) => {
               }} 
             />
             <div className="flex space-x-2">
-              <Button type="submit" className="">Submit Application</Button>
+              <Button type="submit" className="" disabled={isSubmitting}>Submit Application</Button>
               <Button type="button" onClick={handleCancel}>Cancel</Button>
             </div>
           </Form>
@@ -172,10 +172,7 @@ const Jobs = () => {
 
   return (
     <MasterLayout>
-      <div className="flex items-center justify-between mb-8">
-        <PageTitle>All Jobs</PageTitle>
-      </div>
-
+      <PageHeader title="All Jobs"></PageHeader> 
       <div className="flex space-x-2">
         <div className="w-1/2">
           <JobList

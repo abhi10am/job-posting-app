@@ -1,5 +1,4 @@
 import Card from 'components/Card'
-import PageTitle from 'components/PageTitle'
 import Button from 'components/form/Button'
 import FormikSelect from 'components/form/FormikSelect'
 import InputLabel from 'components/form/InputLabel'
@@ -13,6 +12,7 @@ import { useCreateJobMutation } from 'store/apis/admin/job'
 import { toast } from 'react-toastify'
 import FormikInput from 'components/form/FormikInput'
 import FormikTextarea from 'components/form/FormikTextarea'
+import PageHeader from 'components/PageHeader'
 
 const RowInput = (props) => {
   return (
@@ -96,10 +96,7 @@ const PostNewJob = () => {
 
   return (
     <MasterLayout>
-      <div className="flex items-center justify-between mb-8">
-        <PageTitle>Post New Job</PageTitle>
-      </div>
-      
+      <PageHeader title="Post New Job"></PageHeader>
       <Formik
         initialValues={initialValues}
         onSubmit={onSubmit}
@@ -184,7 +181,7 @@ const PostNewJob = () => {
               </div>
 
             </Card>
-            <Button type="submit" className="float-right">Submit Job Post</Button>
+            <Button type="submit" className="float-right" disabled={isSubmitting}>Submit Job Post</Button>
           </Form>
         )}
       </Formik>

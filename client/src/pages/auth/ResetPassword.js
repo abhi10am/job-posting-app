@@ -60,7 +60,7 @@ const ResetPassword = (props) => {
                     <InputLabel>Confirm Password</InputLabel>
                     <FormikInput type="password" name="confirmPassword" id="confirmPassword" placeholder="••••••••" />
                   </div>
-                  <Button type="submit" className="w-full">Reset password</Button>
+                  <Button type="submit" className="w-full" disabled={isSubmitting}>Reset password</Button>
                   <p className="text-sm font-light text-gray-500">
                     Return back to <CustomLink to="/login">Login</CustomLink>
                   </p>

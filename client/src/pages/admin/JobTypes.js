@@ -1,5 +1,5 @@
 import MasterList, { MasterNewItem } from 'components/MasterList';
-import PageTitle from 'components/PageTitle';
+import PageHeader from 'components/PageHeader';
 import MasterLayout from 'components/layout/MasterLayout'
 import React from 'react'
 import { toast } from 'react-toastify';
@@ -54,10 +54,7 @@ const JobTypes = () => {
 
   return (
     <MasterLayout>
-      <div className="flex items-center justify-between mb-8">
-        <PageTitle>Job Types</PageTitle>
-      </div>
-
+      <PageHeader title="Job Types"></PageHeader> 
       <div className="">
         <MasterNewItem handleCreate={handleCreate} type="Type" />
         <MasterList

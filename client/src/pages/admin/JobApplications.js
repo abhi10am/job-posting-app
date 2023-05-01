@@ -1,6 +1,5 @@
 import Card from 'components/Card'
 import Loader from 'components/Loader'
-import PageTitle from 'components/PageTitle'
 import StatusTag from 'components/StatusTag'
 import MasterLayout from 'components/layout/MasterLayout'
 import { Formik, Form } from 'formik'
@@ -10,6 +9,9 @@ import { useGetJobApplicationByIdQuery, useGetJobApplicationsQuery, useUpdateJob
 import Button from 'components/form/Button'
 import { toast } from 'react-toastify'
 import FormikTextarea from 'components/form/FormikTextarea'
+import PageHeader from 'components/PageHeader'
+import axios from 'axios'
+import genericHelper from 'helpers/GenericHelper'
 
 const JobApplicationAction = ({ data }) => {
   const [updateApplicationStatus] = useUpdateJobApplicationStatusMutation();
@@ -46,7 +48,7 @@ const JobApplicationAction = ({ data }) => {
             <Form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
               <FormikTextarea name="rejectReason" id="rejectReason" rows={4} placeholder="Reason for rejection the job application" />
               <div className="flex space-x-2">
-                <Button type="submit">Submit</Button>
+                <Button type="submit" disabled={isSubmitting}>Submit</Button>
                 <Button type="button" onClick={() => setIsRejecting(false)}>Cancel</Button>
               </div>
             </Form>
@@ -74,6 +76,26 @@ const JobAppDetail = ({ id }) => {
     return <div className="flex items-center justify-center">No data found</div>
   }
 
+  const downloadResume = async (id) => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}/admin/job-application/${id}/download-resume`, {
+        headers: {
+          'x-access-token': genericHelper.getAccessToken()
+        },
+        responseType: 'blob',
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'Resume.pdf');
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <Card className="">
       <div className="relative">
@@ -90,9 +112,12 @@ const JobAppDetail = ({ id }) => {
           <div className="text-gray-600">Relevancy Score:</div>
           <div className="font-medium">{data.relevancyScore}</div>
         </div>
-        <button className="flex items-center space-x-2 px-2 py-1 rounded bg-gray-200 mb-8">
+        <Button 
+          type="button" 
+          onClick={() => downloadResume(id)}
+          className="flex items-center space-x-2 px-2 py-1 rounded bg-gray-200 mb-8">
           <div className="text-sm">Download Resume</div>
-        </button>
+        </Button>
         <JobApplicationAction data={data} />
       </div>
     </Card>
@@ -152,10 +177,7 @@ const JobApplications = () => {
 
   return (
     <MasterLayout>
-      <div className="flex items-center justify-between mb-8">
-        <PageTitle>Job Applications</PageTitle>
-      </div>
-
+      <PageHeader title="Job Applications"></PageHeader>
       <div className="flex space-x-2">
         <div className="w-1/2">
           <JobApplicationList

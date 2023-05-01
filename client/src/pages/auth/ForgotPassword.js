@@ -54,7 +54,7 @@ const ForgotPassword = () => {
                     <InputLabel htmlFor="email">Email</InputLabel>
                     <FormikInput type="email" name="email" id="email" placeholder="example@domain.com" required />
                   </div>
-                  <Button type="submit" className="w-full">Send reset password email</Button>
+                  <Button type="submit" className="w-full" disabled={isSubmitting}>Send reset password email</Button>
                   <p className="text-sm font-light text-gray-500">
                     Return back to <CustomLink to="/login" className="font-medium">Login</CustomLink>
                   </p>

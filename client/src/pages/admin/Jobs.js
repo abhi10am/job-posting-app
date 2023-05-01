@@ -1,13 +1,13 @@
 import Card from 'components/Card'
 import CustomLink from 'components/CustomLink'
 import Loader from 'components/Loader'
-import PageTitle from 'components/PageTitle'
 import Separator from 'components/Separator'
 import Button from 'components/form/Button'
 import MasterLayout from 'components/layout/MasterLayout'
 import React, { useEffect, useState } from 'react'
 import { useGetJobByIdQuery, useGetJobsQuery } from 'store/apis/admin/job'
 import { JobList } from 'components/job/JobList'
+import PageHeader from 'components/PageHeader'
 
 
 const JobDetail = ({ id }) => {
@@ -75,12 +75,10 @@ const Jobs = () => {
 
   return (
     <MasterLayout>
-      <div className="flex items-center justify-between mb-8">
-        <PageTitle>All Jobs</PageTitle>
-        <CustomLink to="/admin/jobs/create">
-          <Button type="button">Post New Job</Button>
-        </CustomLink>
-      </div>
+      <PageHeader 
+        title="All Jobs" 
+        actions={<CustomLink to="/admin/jobs/create"><Button type="button">Post New Job</Button></CustomLink>}
+      ></PageHeader>
 
       <div className="flex space-x-2">
         <div className="w-1/2">
