@@ -1,3 +1,4 @@
+import AppLogo from 'components/AppLogo'
 import CustomLink from 'components/CustomLink'
 import config from 'config/config'
 import { useAuth } from 'contexts/auth'
@@ -75,7 +76,9 @@ const Navbar = () => {
     <nav className="bg-white fixed w-full z-20 top-0 left-0 border-b border-gray-200 h-[70px]">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <CustomLink to="/login" className="flex items-center">
-          <span className="self-center text-2xl font-semibold whitespace-nowrap">Jobs Posting App</span>
+          <span className="self-center text-2xl font-semibold whitespace-nowrap">
+            <AppLogo />
+          </span>
         </CustomLink>
         <div className="md:hidden">
           <button type="button" onClick={() => setIsNavExpanded(prev => !prev)} className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200" aria-controls="navbar-sticky" aria-expanded="false">

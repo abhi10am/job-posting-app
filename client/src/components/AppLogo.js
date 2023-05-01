@@ -2,9 +2,7 @@ import React from 'react'
 
 const AppLogo = () => {
   return (
-    <div>
-      Jobs Posting App
-    </div>
+    <div>{process.env.REACT_APP_APP_NAME}</div>
   )
 }
 
