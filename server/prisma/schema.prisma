@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int              @id @default(autoincrement())
+  name           String
+  email          String           @unique
+  phone          String           @unique @db.VarChar(10)
+  password       String
+  role           Role
+  createdAt      DateTime         @default(now())
+  JobApplication JobApplication[]
+  Job            Job[]
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model PasswordReset {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  token     String
+  createdAt DateTime @default(now())
+}
+
+model JobCategory {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  Job       Job[]
+}
+
+model JobType {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  Job       Job[]
+}
+
+model Job {
+  id                Int              @id @default(autoincrement())
+  title             String
+  companyName       String
+  tags              String
+  skills            String
+  experience        String
+  description       String           @db.LongText
+  salary            String
+  category          JobCategory      @relation(fields: [categoryId], references: [id])
+  categoryId        Int
+  type              JobType          @relation(fields: [typeId], references: [id])
+  typeId            Int
+  admin             User             @relation(fields: [adminId], references: [id])
+  adminId           Int
+  additionalDetails String           @db.LongText
+  createdAt         DateTime         @default(now())
+  JobApplication    JobApplication[]
+}
+
+model JobApplication {
+  id             Int                  @id @default(autoincrement())
+  user           User                 @relation(fields: [userId], references: [id])
+  userId         Int
+  job            Job                  @relation(fields: [jobId], references: [id])
+  jobId          Int
+  resume         String
+  status         JobApplicationStatus @default(PENDING)
+  rejectReason   String?
+  relevancyScore Int?
+  createdAt      DateTime             @default(now())
+}
+
+enum JobApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}

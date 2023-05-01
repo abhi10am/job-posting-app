@@ -1,0 +1,19 @@
+Hi
+{{#if isAdmin}}
+{{job.admin.name}},
+{{else}}
+{{user.name}},
+{{/if}}
+<br /><br />
+
+{{#if isAdmin}}
+Candidate has submitted the job application
+{{else}}
+You have successfully submitted the job application
+{{/if}}
+
+<br /><br />
+
+Candidate: {{user.name}}
+<br />
+Job: {{job.title}}

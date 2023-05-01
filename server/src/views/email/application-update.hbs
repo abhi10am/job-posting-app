@@ -1,0 +1,13 @@
+Hi
+{{application.user.name}},
+<br /><br />
+
+Your application has been {{#if isRejected}} rejected {{else}} accepted {{/if}} by the Admin
+<br /><br />
+
+Job: {{application.job.title}}
+<br />
+
+{{#if isRejected}}
+Reason for rejection: {{application.rejectReason}}
+{{/if}}
