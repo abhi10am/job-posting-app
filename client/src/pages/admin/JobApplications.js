@@ -12,6 +12,7 @@ import FormikTextarea from 'components/form/FormikTextarea'
 import PageHeader from 'components/PageHeader'
 import axios from 'axios'
 import genericHelper from 'helpers/GenericHelper'
+import { HiArrowDownTray } from "react-icons/hi2"
 
 const JobApplicationAction = ({ data }) => {
   const [updateApplicationStatus] = useUpdateJobApplicationStatusMutation();
@@ -48,8 +49,8 @@ const JobApplicationAction = ({ data }) => {
             <Form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
               <FormikTextarea name="rejectReason" id="rejectReason" rows={4} placeholder="Reason for rejection the job application" />
               <div className="flex space-x-2">
-                <Button type="submit" disabled={isSubmitting}>Submit</Button>
-                <Button type="button" onClick={() => setIsRejecting(false)}>Cancel</Button>
+                <Button variant="primary" type="submit" disabled={isSubmitting}>Submit</Button>
+                <Button variant="link" type="button" onClick={() => setIsRejecting(false)}>Cancel</Button>
               </div>
             </Form>
           )}
@@ -57,8 +58,8 @@ const JobApplicationAction = ({ data }) => {
       : <div>
           {data.status === "PENDING" 
             ? <div className="flex items-center space-x-2">
-                <Button onClick={() => handleUpdateStatus({ status: "APPROVED" })}>Approve Application</Button>
-                <Button onClick={() => setIsRejecting(true)}>Reject Application</Button>
+                <Button variant="success-soft" onClick={() => handleUpdateStatus({ status: "APPROVED" })} className="w-full">Approve Application</Button>
+              <Button variant="danger-soft" onClick={() => setIsRejecting(true)} className="w-full">Reject Application</Button>
               </div>
             : ""}
         </div>
@@ -114,8 +115,10 @@ const JobAppDetail = ({ id }) => {
         </div>
         <Button 
           type="button" 
+          variant="secondary"
           onClick={() => downloadResume(id)}
-          className="flex items-center space-x-2 px-2 py-1 rounded bg-gray-200 mb-8">
+          className="flex items-center space-x-2 mb-8">
+          <HiArrowDownTray className="text-lg" />
           <div className="text-sm">Download Resume</div>
         </Button>
         <JobApplicationAction data={data} />
