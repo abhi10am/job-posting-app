@@ -3,7 +3,7 @@ import React from 'react'
 
 const FormikFileInput = (props) => {
   return (
-    <div>
+    <div className="mb-4">
       <label className="block">
         <span className="sr-only">Choose profile photo</span>
         <Field name="file">
@@ -12,7 +12,7 @@ const FormikFileInput = (props) => {
                       file:mr-4 file:py-2 file:px-4
                       file:rounded-full file:border-0
                       file:text-sm file:font-semibold
-                      file:bg-primary-50 file:text-primary-700 cursor-pointer"
+                      file:bg-primary-100 file:text-primary-700 cursor-pointer"
               {...field}
               {...props}
             />

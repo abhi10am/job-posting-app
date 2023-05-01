@@ -15,7 +15,7 @@ const Button = ({ variant="primary", size="default", children, className="", ...
   
   return (
     <button
-      className={`focus:outline-none font-medium rounded-lg px-4 py-2 text-center ${variants[variant]} ${className}`}
+      className={`focus:outline-none font-medium rounded-lg px-4 py-2 text-center disabled:opacity-40 ${variants[variant]} ${className}`}
       {...props}
     >
       {children}

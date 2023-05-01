@@ -20,11 +20,11 @@ export const MasterNewItem = ({ handleCreate, type }) => {
       }
     >
       {({ handleSubmit, isSubmitting, errors }) => (
-        <Form onSubmit={handleSubmit} className="flex items-stretch space-x-4 mb-4">
-          <div className={`bg-white text-gray-800 p-3 w-full rounded-lg`}>
+        <Form onSubmit={handleSubmit} className="sm:flex sm:items-stretch sm:space-x-4 space-y-2 sm:space-y-0 mb-10 sm:mb-4">
+          <div className={`bg-white text-gray-800 p-2 px-4 w-full rounded-lg`}>
             <Field type="text" name="name" className="w-full outline-none" placeholder={`Enter job ${type.toLowerCase()}`} />
           </div>
-          <Button type="button" className="whitespace-nowrap">
+          <Button type="submit" className="whitespace-nowrap w-full sm:w-auto" disabled={isSubmitting}>
             Add New {type}
           </Button>
         </Form>
@@ -43,7 +43,7 @@ const ListActionButton = ({ children, className = "", ...props }) => {
 
 const ListItem = ({ item, isEditing, handleEdit, handleDelete }) => {
   return (
-    <div className="group bg-white text-gray-800 p-4 flex items-center justify-between first:rounded-t-lg last:rounded-b-lg">
+    <div className="group bg-white text-gray-800 px-4 py-2.5 flex items-center justify-between first:rounded-t-lg last:rounded-b-lg">
       <div>{item.name}</div>
       <div className={`hidden items-center justify-center space-x-4 ${isEditing ? '' : 'group-hover:flex'}`}>
         <ListActionButton type="button" className="text-primary-600 hover:text-primary-800" onClick={() => handleEdit(item.id)}>Edit</ListActionButton>
@@ -66,7 +66,7 @@ const EditListItem = ({ item, isEditing, handleUpdate, handleCancelEdit }) => {
     >
       {({ handleSubmit, isSubmitting }) => (
         <Form onSubmit={handleSubmit}>
-          <div className={`bg-white text-gray-800 p-4 flex items-center justify-between space-x-2 first:rounded-t-lg last:rounded-b-lg ${isEditing ? 'outline outline-2 outline-primary-600' : ''}`}>
+          <div className={`bg-white text-gray-800 px-4 py-2.5 flex items-center justify-between space-x-2 first:rounded-t-lg last:rounded-b-lg ${isEditing ? 'outline outline-2 outline-primary-600' : ''}`}>
             <Field type="text" name="name" className="w-full outline-none" />
             <div className="flex items-center justify-center space-x-4">
               <ListActionButton type="submit" className="text-primary-600 hover:text-primary-800" disabled={isSubmitting}>Update</ListActionButton>

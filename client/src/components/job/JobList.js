@@ -1,15 +1,20 @@
 import Card from "components/Card"
 import Loader from "components/Loader"
 import Separator from "components/Separator"
+import { HiOutlineBuildingOffice } from "react-icons/hi2"
 
-const JobListItem = ({ data, jobDetailId, handleViewJobDetail }) => {
+const JobListItem = ({ data, jobDetailId, handleViewJobDetail, onItemClick }) => {
   return (
     <Card
       className={`text-gray-800 cursor-pointer ${jobDetailId === data.id ? 'outline outline-2 outline-primary-600' : ''}`}
-      onClick={() => handleViewJobDetail(data.id)}
+      onClick={() => {
+        handleViewJobDetail(data.id);
+        onItemClick();
+      }}
     >
       <div className="text-lg font-medium mb-1">{data.title}</div>
       <div className="flex items-center space-x-1 mb-1">
+        <HiOutlineBuildingOffice className="text-md text-gray-500" />
         <div className="text-xs text-gray-600">{data.companyName}</div>
       </div>
       <div className="flex items-center space-x-1 mb-2">
@@ -29,7 +34,7 @@ const JobListItem = ({ data, jobDetailId, handleViewJobDetail }) => {
   )
 }
 
-export const JobList = ({ jobs, jobDetailId, handleViewJobDetail, isLoading }) => {
+export const JobList = ({ jobs, jobDetailId, handleViewJobDetail, isLoading, onItemClick }) => {
   if (isLoading) return <Loader />
 
   if (!isLoading && !jobs) return (
@@ -44,6 +49,7 @@ export const JobList = ({ jobs, jobDetailId, handleViewJobDetail, isLoading }) =
           jobDetailId={jobDetailId}
           handleViewJobDetail={handleViewJobDetail}
           data={job}
+          onItemClick={onItemClick}
         />
       ))}
     </div>

@@ -1,6 +1,5 @@
 import Card from 'components/Card'
 import Loader from 'components/Loader'
-import Separator from 'components/Separator'
 import MasterLayout from 'components/layout/MasterLayout'
 import React, { useEffect, useState } from 'react'
 import { Formik, Form } from 'formik'
@@ -13,8 +12,12 @@ import { useSubmitJobApplicationMutation } from 'store/apis/user/job-application
 import { toast } from 'react-toastify'
 import { JobList } from 'components/job/JobList'
 import PageHeader from 'components/PageHeader'
+import JobContent from 'components/job/JobContent'
+import useWindowWidth from 'hooks/windowWidth'
+import Modal from 'components/Modal'
+import { HiOutlineInformationCircle } from 'react-icons/hi2'
 
-const JobApplicationForm = ({ id, handleOnSubmit, handleCancel }) => {
+const JobApplicationForm = ({ id, handleOnSubmit, handleCancel, useModal }) => {
   const FILE_SIZE = 1024 * 1024 * 2; // 2 MB
   const SUPPORTED_FORMATS = ['application/pdf'];
 
@@ -55,7 +58,7 @@ const JobApplicationForm = ({ id, handleOnSubmit, handleCancel }) => {
   }
 
   return (
-    <div className="bg-primary-100 -m-4 p-4 rounded-b-lg">
+    <div className="">
       <Formik
         initialValues={{ resume: '' }}
         onSubmit={onSubmit}
@@ -73,7 +76,7 @@ const JobApplicationForm = ({ id, handleOnSubmit, handleCancel }) => {
             />
             <div className="flex space-x-2">
               <Button type="submit" className="" disabled={isSubmitting}>Submit Application</Button>
-              <Button type="button" onClick={handleCancel}>Cancel</Button>
+              <Button type="button" variant="link" onClick={handleCancel}>Cancel</Button>
             </div>
           </Form>
         )}
@@ -82,7 +85,7 @@ const JobApplicationForm = ({ id, handleOnSubmit, handleCancel }) => {
   )
 }
 
-const JobDetail = ({ id }) => {
+const JobDetail = ({ id, useModal }) => {
   const { data, isLoading, isFetching } = useGetJobByIdQuery(id);
   const [isApplied, setIsApplied] = useState(true);
   const [isApplying, setIsApplying] = useState(false);
@@ -97,93 +100,101 @@ const JobDetail = ({ id }) => {
     return <div className="flex items-center justify-center">No data found</div>
   }
 
+  const ApplyButton = () => {
+    return isApplied
+      ? <div className="bg-primary-200 text-primary-600 font-medium px-4 py-2 rounded flex space-x-2 items-center">
+          <HiOutlineInformationCircle className="text-xl" />
+          <span>You have applied for this job</span>
+        </div>
+      : <Button
+        type="button"
+        onClick={() => {
+          if (!isApplied) setIsApplying(true);
+        }}
+        disabled={isApplied}
+      >
+        Apply Now
+      </Button>
+  }
+
   return (
-    <Card className="">
-      <div className="text-lg font-medium mb-1">{data.title}</div>
-      <div className="flex items-center space-x-1 mb-1">
-        <div className="text-xs text-gray-600">{data.companyName}</div>
-      </div>
-      <div className="flex items-center space-x-1 mb-2">
-        <div className="text-xs text-gray-600">{data.category.name}</div>
-        <Separator className="mx-2" />
-        <div className="text-xs text-gray-600">{data.type.name}</div>
-      </div>
-      <div className="text-sm mb-3 font-medium text-gray-600">
-        ₹ {data.salary}
-      </div>
-      <div className="flex flex-wrap space-x-1 mb-4">
-        {data.skills.split(', ').map((item, index) => (
-          <div key={index} className="px-2 py-1 bg-gray-200 text-xs rounded">{item}</div>
-        ))}
-      </div>
-      <div className="text-sm flex flex-wrap space-x-2 mb-6">
-        <div className="">Experience required:</div>
-        <div className="">{data.experience}</div>
-      </div>
-      <p className="text-sm whitespace-pre-line mb-6">{data.description}</p>
-      <div className="space-y-2 mb-6">
-        {data.additionalDetails && JSON.parse(data.additionalDetails).map((item, index) => (
-          <div key={index} className="text-sm space-x-1">
-            <span className="font-medium">{item.key}:</span>
-            <span className="">{item.value}</span>
-          </div>
-        ))}
-      </div>
-      <div className="flex items-center flex-wrap space-x-1 mb-8">
-        <div className="text-sm text-gray-600 mr-2">Tags</div>
-        {data.tags.split(', ').map((item, index) => (
-          <div key={index} className="px-2 py-1 bg-gray-200 text-xs rounded">{item}</div>
-        ))}
-      </div>
+    <div className="space-y-8">
+      <JobContent data={data} />
       {isApplying
         ? <JobApplicationForm 
             id={id} 
+            useModal={useModal}
             handleOnSubmit={() => {
               setIsApplied(true);
               setIsApplying(false);
             }} 
             handleCancel={() => setIsApplying(false)} 
           />
-        : <Button 
-            type="button" 
-            onClick={() => {
-              if(!isApplied) setIsApplying(true);
-            }}
-            disabled={isApplied}
-          >
-            {isApplied ? "Applied" : "Apply Now" }
-          </Button>
+        : <ApplyButton />
       }
-    </Card>
+    </div>
   )
 }
 
 const Jobs = () => {
   const { data: jobs, isLoading, isFetching } = useGetJobsQuery();
   const [jobDetailId, setJobDetailId] = useState(null);
+  const [useModal, setUseModal] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const windowWidth = useWindowWidth();
 
   useEffect(() => {
-    if (jobs) setJobDetailId(jobs[0].id);
+    if ((windowWidth < 1024)) {
+      setUseModal(true);
+      setIsOpen(jobDetailId !== null);
+    }
+    else if (jobs) {
+      setUseModal(false);
+      setIsOpen(false);
+      setJobDetailId(jobs[0].id);
+    }
+  }, [windowWidth, jobDetailId, jobs]);
+
+  useEffect(() => {
+    if (!isOpen) setJobDetailId(null);
+  }, [isOpen]);
+
+  useEffect(() => {
+    if ((windowWidth > 1024) && jobs) setJobDetailId(jobs[0].id);
   }, [jobs]);
 
   const handleViewJobDetail = (id) => {
     setJobDetailId(id);
   }
 
+  const JobDetailWrapper = () => {
+    return (
+      useModal
+        ? <Modal isOpen={ isOpen } setIsOpen={ setIsOpen } title="View Job">
+            <JobDetail id={ jobDetailId } useModal={ useModal } />
+          </Modal> 
+        : <Card><JobDetail id={jobDetailId} useModal={useModal} /></Card>
+    )
+  }
+
   return (
     <MasterLayout>
       <PageHeader title="All Jobs"></PageHeader> 
-      <div className="flex space-x-2">
-        <div className="w-1/2">
+      <div className="lg:flex space-y-2 lg:space-x-2 lg:space-y-0">
+        <div className="lg:w-1/2">
           <JobList
             jobs={jobs}
             jobDetailId={jobDetailId}
             handleViewJobDetail={handleViewJobDetail}
             isLoading={isLoading || isFetching}
+            onItemClick={() => setIsOpen(true)}
           />
         </div>
-        <div className="w-1/2">
-          {jobDetailId ? <JobDetail id={jobDetailId} /> : ""}
+        <div className="lg:w-1/2">
+          {jobDetailId 
+            ? <JobDetailWrapper />
+            : ""
+          }  
         </div>
       </div>
     </MasterLayout>

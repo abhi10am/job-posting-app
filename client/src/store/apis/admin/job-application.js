@@ -10,17 +10,17 @@ export const jobAdminApplicationApi = createApi({
       return headers;
     }
   }),
-  tagTypes: ["JobApplications"],
+  tagTypes: ["JobApplicationStatus"],
   endpoints: (builder) => ({
     getJobApplications: builder.query({
       query: () => "/list",
       transformResponse: (response, meta, arg) => response.data,
-      providesTags: ["JobApplications"]
+      providesTags: []
     }),
     getJobApplicationById: builder.query({
       query: (id) => `/${id}`,
       transformResponse: (response, meta, arg) => response.data,
-      providesTags: ["JobApplications"]
+      providesTags: ["JobApplicationStatus"]
     }),
     updateJobApplicationStatus: builder.mutation({
       query: ({ id, ...data}) => ({
@@ -28,7 +28,7 @@ export const jobAdminApplicationApi = createApi({
         method: "POST",
         body: data
       }),
-      invalidatesTags: ["JobApplications"]
+      invalidatesTags: ["JobApplicationStatus"]
     }),
   }),
 })

@@ -105,8 +105,8 @@ const PostNewJob = () => {
         {({ handleSubmit, handleChange, values, errors, isSubmitting }) => (
           <Form onSubmit={handleSubmit} className="space-y-6">
             <Card className="space-y-4">
-              <div className="flex space-x-4">
-                <div className="space-y-4 w-1/2">
+              <div className="md:flex md:space-x-4 space-y-4 md:space-y-0">
+                <div className="space-y-4 md:w-1/2">
                   <div>
                     <InputLabel htmlFor="title">Job Title</InputLabel>
                     <FormikInput type="text" name="title" id="title" placeholder="e.g. ReactJS Developer" />
@@ -120,8 +120,8 @@ const PostNewJob = () => {
                     <FormikTextarea name="description" id="description" rows="5" className="resize-none" placeholder="" />
                   </div>
                 </div>
-                <div className="space-y-4 w-1/2">
-                  <div className="flex items-center space-x-4">
+                <div className="space-y-4 md:w-1/2">
+                  <div className="sm:flex sm:items-center sm:space-x-4 space-y-4 sm:space-y-0">
                     <div className="w-full">
                       <InputLabel htmlFor="category">Job Category</InputLabel>
                       <FormikSelect name="category" id="category" as="select">
@@ -142,7 +142,7 @@ const PostNewJob = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-4">
+                  <div className="sm:flex sm:items-center sm:space-x-4 space-y-4 sm:space-y-0">
                     <div className="w-full">
                       <InputLabel htmlFor="experience">Experience Required</InputLabel>
                       <FormikInput type="text" name="experience" id="experience" placeholder="e.g. 2 years" />
@@ -162,7 +162,7 @@ const PostNewJob = () => {
                   </div>
                 </div>
               </div>
-              <div className="w-1/2">
+              <div className="md:w-1/2">
                 <FieldArray name="additionalDetails">
                   {({ push, remove }) => (
                     <div className="space-y-1 mr-2">
@@ -181,7 +181,7 @@ const PostNewJob = () => {
               </div>
 
             </Card>
-            <Button type="submit" className="float-right" disabled={isSubmitting}>Submit Job Post</Button>
+            <Button type="submit" className="w-full sm:w-auto sm:float-right" disabled={isSubmitting}>Submit Job Post</Button>
           </Form>
         )}
       </Formik>

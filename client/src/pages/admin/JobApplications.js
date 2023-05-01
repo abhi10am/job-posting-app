@@ -13,11 +13,14 @@ import PageHeader from 'components/PageHeader'
 import axios from 'axios'
 import genericHelper from 'helpers/GenericHelper'
 import { HiArrowDownTray } from "react-icons/hi2"
+import Modal from 'components/Modal'
+import useWindowWidth from 'hooks/windowWidth'
 
 const JobApplicationAction = ({ data }) => {
   const [updateApplicationStatus] = useUpdateJobApplicationStatusMutation();
   const [isRejecting, setIsRejecting] = useState(false);
 
+  if (data.status !== "PENDING") return "";
 
   const handleUpdateStatus = async (values) => {
     await updateApplicationStatus({ id: data.id, ...values })
@@ -55,27 +58,17 @@ const JobApplicationAction = ({ data }) => {
             </Form>
           )}
         </Formik>
-      : <div>
-          {data.status === "PENDING" 
-            ? <div className="flex items-center space-x-2">
-                <Button variant="success-soft" onClick={() => handleUpdateStatus({ status: "APPROVED" })} className="w-full">Approve Application</Button>
-              <Button variant="danger-soft" onClick={() => setIsRejecting(true)} className="w-full">Reject Application</Button>
-              </div>
-            : ""}
+      : <div className="flex items-center space-x-2">
+          <Button variant="success-soft" onClick={() => handleUpdateStatus({ status: "APPROVED" })} className="w-full">Approve Application</Button>
+          <Button variant="danger-soft" onClick={() => setIsRejecting(true)} className="w-full">Reject Application</Button>
         </div>
     }
     </div>
   )
 }
 
-const JobAppDetail = ({ id }) => {
-  const { data, isLoading, isFetching } = useGetJobApplicationByIdQuery(id);
-
-  if (!id || isLoading || isFetching) return <Loader />
-
-  if (!data && !isLoading && !isFetching) {
-    return <div className="flex items-center justify-center">No data found</div>
-  }
+const JobAppContent = ({ data, isLoading }) => {
+  if (isLoading) return <Loader />
 
   const downloadResume = async (id) => {
     try {
@@ -98,9 +91,9 @@ const JobAppDetail = ({ id }) => {
   };
 
   return (
-    <Card className="">
-      <div className="relative">
-        <StatusTag status={data.status} className="absolute top-0 right-0" />
+    <div className="relative">
+      <StatusTag status={data.status} className="absolute top-0 right-0" />
+      <div className="space-y-2 mb-8">
         <div className="flex items-center text-sm space-x-1">
           <div className="text-gray-600">Job:</div>
           <div className="font-medium">{data.job.title}</div>
@@ -113,25 +106,48 @@ const JobAppDetail = ({ id }) => {
           <div className="text-gray-600">Relevancy Score:</div>
           <div className="font-medium">{data.relevancyScore}</div>
         </div>
-        <Button 
-          type="button" 
-          variant="secondary"
-          onClick={() => downloadResume(id)}
-          className="flex items-center space-x-2 mb-8">
-          <HiArrowDownTray className="text-lg" />
-          <div className="text-sm">Download Resume</div>
-        </Button>
-        <JobApplicationAction data={data} />
       </div>
-    </Card>
+      <Button
+        type="button"
+        variant="secondary"
+        onClick={() => downloadResume(data.id)}
+        className="flex items-center space-x-2 mb-8">
+        <HiArrowDownTray className="text-lg" />
+        <div className="text-sm">Download Resume</div>
+      </Button>
+      <JobApplicationAction data={data} />
+    </div>
   )
 }
 
-const JobAppListItem = ({ data, jobAppDetailId, handleViewJobAppDetail }) => {
+const JobAppDetail = ({ id, useModal, isOpen, setIsOpen }) => {
+  const { data, isLoading, isFetching } = useGetJobApplicationByIdQuery(id);
+
+  if (isLoading || isFetching) return <Loader />
+
+  if (!data && !isLoading && !isFetching) {
+    return <div className="flex items-center justify-center">No data found</div>
+  }
+
+  return (
+    useModal
+      ? <Modal isOpen={isOpen} setIsOpen={setIsOpen} title="Job Application">
+          <JobAppContent data={data} isLoading={isLoading || isFetching} />
+        </Modal>
+      : <Card>
+          <JobAppContent data={data} isLoading={isLoading || isFetching} />
+        </Card>
+  )
+}
+
+const JobAppListItem = ({ data, jobAppDetailId, handleViewJobAppDetail, onItemClick }) => {
   return (
     <Card
-      className={`text-gray-800 cursor-pointer ${jobAppDetailId === data.id ? 'outline outline-2 outline-primary-600' : ''}`}
-      onClick={() => handleViewJobAppDetail(data.id)}
+      className={`text-gray-800 cursor-pointer space-y-1 ${jobAppDetailId === data.id ? 'outline outline-2 outline-primary-600' : ''}`}
+      onClick={() => {
+        handleViewJobAppDetail(data.id);
+        onItemClick();
+      }}
     >
       <div className="flex items-center text-sm space-x-1">
         <div className="text-gray-600">Job:</div>
@@ -145,7 +161,7 @@ const JobAppListItem = ({ data, jobAppDetailId, handleViewJobAppDetail }) => {
   )
 }
 
-const JobApplicationList = ({ jobApps, jobAppDetailId, handleViewJobAppDetail, isLoading }) => {
+const JobApplicationList = ({ jobApps, jobAppDetailId, handleViewJobAppDetail, isLoading, onItemClick }) => {
   if (isLoading) return <Loader />
 
   if (!isLoading && !jobApps) return (
@@ -160,6 +176,7 @@ const JobApplicationList = ({ jobApps, jobAppDetailId, handleViewJobAppDetail, i
           jobAppDetailId={jobAppDetailId}
           handleViewJobAppDetail={handleViewJobAppDetail}
           data={jobApp}
+          onItemClick={onItemClick}
         />
       ))}
     </div>
@@ -169,9 +186,28 @@ const JobApplicationList = ({ jobApps, jobAppDetailId, handleViewJobAppDetail, i
 const JobApplications = () => {
   const { data: jobApps, isLoading, isFetching } = useGetJobApplicationsQuery();
   const [jobAppDetailId, setJobAppDetailId] = useState(null);
+  const [useModal, setUseModal] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const windowWidth = useWindowWidth();
 
   useEffect(() => {
-    if (jobApps) setJobAppDetailId(jobApps[0].id);
+    if ((windowWidth < 1024)) {
+      setUseModal(true);
+      setIsOpen(jobAppDetailId !== null);
+    }
+    else if (jobApps) {
+      setUseModal(false);
+      setIsOpen(false);
+      setJobAppDetailId(jobApps[0].id);
+    }
+  }, [windowWidth, jobAppDetailId, jobApps]);
+
+  useEffect(() => {
+    if (!isOpen) setJobAppDetailId(null);
+  }, [isOpen]);
+
+  useEffect(() => {
+    if ((windowWidth > 1024) && jobApps) setJobAppDetailId(jobApps[0].id);
   }, [jobApps]);
 
   const handleViewJobAppDetail = (id) => {
@@ -181,17 +217,25 @@ const JobApplications = () => {
   return (
     <MasterLayout>
       <PageHeader title="Job Applications"></PageHeader>
-      <div className="flex space-x-2">
-        <div className="w-1/2">
+      <div className="lg:flex space-y-2 lg:space-x-2 lg:space-y-0">
+        <div className="lg:w-1/2">
           <JobApplicationList
             jobApps={jobApps}
             jobAppDetailId={jobAppDetailId}
             handleViewJobAppDetail={handleViewJobAppDetail}
             isLoading={isLoading || isFetching}
+            onItemClick={() => setIsOpen(true)}
           />
         </div>
-        <div className="w-1/2">
-          {jobAppDetailId ? <JobAppDetail id={jobAppDetailId} /> : ""}
+        <div className="lg:w-1/2">
+          {jobAppDetailId 
+            ? <JobAppDetail 
+                id={jobAppDetailId}
+                useModal={useModal}
+                isOpen={isOpen}
+                setIsOpen={setIsOpen}  
+              />
+            : ""}
         </div>
       </div>
     </MasterLayout>
