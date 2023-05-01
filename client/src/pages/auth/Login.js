@@ -14,8 +14,8 @@ const Login = () => {
   const { login } = useAuth();
   const initialValues = { email: '', password: '' };
   const validationSchema = Yup.object({
-    email: Yup.string().email().required(),
-    password: Yup.string().required(),
+    email: Yup.string().email().required().label('Email'),
+    password: Yup.string().required().label('Password'),
   });
 
   const onSubmit = async (values) => {
