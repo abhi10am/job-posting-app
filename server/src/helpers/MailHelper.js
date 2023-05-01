@@ -41,12 +41,12 @@ class MailHelper {
     };
 
     const transporter = nodemailer.createTransport({
-      host: "smtp.googlemail.com",
-      port: 465,
-      secure: true,
+      host: process.env.MAIL_HOST,
+      port: process.env.MAIL_PORT,
+      secure: process.env.MAIL_SECURE,
       auth: {
-        user: 'abhishekmankar10.am@gmail.com',
-        pass: 'reemlpxdvatkoqkz'
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS
       }
     });
 

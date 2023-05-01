@@ -8,6 +8,8 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForgotPasswordMutation } from 'store/apis/auth'
 import { toast } from 'react-toastify'
+import AppLogo from 'components/AppLogo'
+import Card from 'components/Card'
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -36,33 +38,31 @@ const ForgotPassword = () => {
     <div className="flex items-center justify-center min-h-screen py-8">
       <div className="w-full sm:max-w-md">
         <div className="text-center mb-6 text-2xl font-semibold text-gray-900">
-          Jobs Posting App
+          <AppLogo />
         </div>
-        <div className="w-full bg-white rounded-lg shadow md:mt-0 xl:p-0">
-          <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-            <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-              Reset Password
-            </h1>
-            <Formik
-              initialValues={initialValues}
-              onSubmit={onSubmit}
-              validationSchema={validationSchema}
-            >
-              {({ handleSubmit, handleChange, values, errors, isSubmitting }) => (
-                <Form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
-                  <div>
-                    <InputLabel htmlFor="email">Email</InputLabel>
-                    <FormikInput type="email" name="email" id="email" placeholder="example@domain.com" required />
-                  </div>
-                  <Button type="submit" className="w-full" disabled={isSubmitting}>Send reset password email</Button>
-                  <p className="text-sm font-light text-gray-500">
-                    Return back to <CustomLink to="/login" className="font-medium">Login</CustomLink>
-                  </p>
-                </Form>
-              )}
-            </Formik>
-          </div>
-        </div>
+        <Card className="p-6 md:space-y-6 sm:p-8 rounded-none sm:rounded-lg space-y-4">
+          <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
+            Reset Password
+          </h1>
+          <Formik
+            initialValues={initialValues}
+            onSubmit={onSubmit}
+            validationSchema={validationSchema}
+          >
+            {({ handleSubmit, handleChange, values, errors, isSubmitting }) => (
+              <Form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
+                <div>
+                  <InputLabel htmlFor="email">Email</InputLabel>
+                  <FormikInput type="email" name="email" id="email" placeholder="example@domain.com" required />
+                </div>
+                <Button type="submit" className="w-full" disabled={isSubmitting}>Send reset password email</Button>
+                <p className="text-sm font-light text-gray-500">
+                  Return back to <CustomLink to="/login" className="font-medium">Login</CustomLink>
+                </p>
+              </Form>
+            )}
+          </Formik>
+        </Card>
       </div>
     </div>
   )
