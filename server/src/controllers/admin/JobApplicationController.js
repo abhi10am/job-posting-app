@@ -50,7 +50,7 @@ class JobApplicationController {
       return responseHelper.error(res, 'Something went wrong', 500);
     }
   }
-
+ 
   async downloadResume(req, res) {
     try {
       const id = parseInt(req.params.id);
