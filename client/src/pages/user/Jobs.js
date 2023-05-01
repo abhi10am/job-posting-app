@@ -1,7 +1,7 @@
 import Card from 'components/Card'
 import Loader from 'components/Loader'
 import MasterLayout from 'components/layout/MasterLayout'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Formik, Form } from 'formik'
 import * as Yup from 'yup'
 import { useGetJobByIdQuery, useGetJobsQuery } from 'store/apis/user/job'
@@ -16,6 +16,7 @@ import JobContent from 'components/job/JobContent'
 import useWindowWidth from 'hooks/windowWidth'
 import Modal from 'components/Modal'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
+import NoDataFound from 'components/NoDataFound'
 
 const JobApplicationForm = ({ id, handleOnSubmit, handleCancel, useModal }) => {
   const FILE_SIZE = 1024 * 1024 * 2; // 2 MB
@@ -142,18 +143,23 @@ const Jobs = () => {
   const [useModal, setUseModal] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const windowWidth = useWindowWidth();
+  const jobDetailIdRef = useRef(jobDetailId);
 
   useEffect(() => {
     if ((windowWidth < 1024)) {
       setUseModal(true);
-      setIsOpen(jobDetailId !== null);
+      setIsOpen(jobDetailIdRef.current !== null);
     }
     else if (jobs) {
       setUseModal(false);
       setIsOpen(false);
       setJobDetailId(jobs[0].id);
     }
-  }, [windowWidth, jobDetailId, jobs]);
+  }, [windowWidth, jobDetailIdRef, jobs]);
+
+  useEffect(() => {
+    jobDetailIdRef.current = jobDetailId;
+  }, [jobDetailId]);
 
   useEffect(() => {
     if (!isOpen) setJobDetailId(null);
@@ -161,7 +167,7 @@ const Jobs = () => {
 
   useEffect(() => {
     if ((windowWidth > 1024) && jobs) setJobDetailId(jobs[0].id);
-  }, [jobs]);
+  }, [jobs, windowWidth]);
 
   const handleViewJobDetail = (id) => {
     setJobDetailId(id);
@@ -180,23 +186,25 @@ const Jobs = () => {
   return (
     <MasterLayout>
       <PageHeader title="All Jobs"></PageHeader> 
-      <div className="lg:flex space-y-2 lg:space-x-2 lg:space-y-0">
-        <div className="lg:w-1/2">
-          <JobList
-            jobs={jobs}
-            jobDetailId={jobDetailId}
-            handleViewJobDetail={handleViewJobDetail}
-            isLoading={isLoading || isFetching}
-            onItemClick={() => setIsOpen(true)}
-          />
-        </div>
-        <div className="lg:w-1/2">
-          {jobDetailId 
-            ? <JobDetailWrapper />
-            : ""
-          }  
-        </div>
-      </div>
+      {!isLoading && !jobs
+        ? <NoDataFound />
+        : <div className="lg:flex space-y-2 lg:space-x-2 lg:space-y-0">
+            <div className="lg:w-1/2">
+              <JobList
+                jobs={jobs}
+                jobDetailId={jobDetailId}
+                handleViewJobDetail={handleViewJobDetail}
+                isLoading={isLoading || isFetching}
+                onItemClick={() => setIsOpen(true)}
+              />
+            </div>
+            <div className="lg:w-1/2">
+              {jobDetailId 
+                ? <JobDetailWrapper />
+                : ""
+              }  
+            </div>
+          </div>}
     </MasterLayout>
   )
 }

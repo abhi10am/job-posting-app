@@ -4,7 +4,7 @@ import StatusTag from 'components/StatusTag'
 import MasterLayout from 'components/layout/MasterLayout'
 import { Formik, Form } from 'formik'
 import * as Yup from 'yup'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useGetJobApplicationByIdQuery, useGetJobApplicationsQuery, useUpdateJobApplicationStatusMutation } from 'store/apis/admin/job-application'
 import Button from 'components/form/Button'
 import { toast } from 'react-toastify'
@@ -15,6 +15,7 @@ import genericHelper from 'helpers/GenericHelper'
 import { HiArrowDownTray } from "react-icons/hi2"
 import Modal from 'components/Modal'
 import useWindowWidth from 'hooks/windowWidth'
+import NoDataFound from 'components/NoDataFound'
 
 const JobApplicationAction = ({ data }) => {
   const [updateApplicationStatus] = useUpdateJobApplicationStatusMutation();
@@ -164,10 +165,6 @@ const JobAppListItem = ({ data, jobAppDetailId, handleViewJobAppDetail, onItemCl
 const JobApplicationList = ({ jobApps, jobAppDetailId, handleViewJobAppDetail, isLoading, onItemClick }) => {
   if (isLoading) return <Loader />
 
-  if (!isLoading && !jobApps) return (
-    <div className="flex items-center justify-center">No data found</div>
-  )
-
   return (
     <div className="space-y-2">
       {jobApps.map((jobApp) => (
@@ -189,18 +186,23 @@ const JobApplications = () => {
   const [useModal, setUseModal] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const windowWidth = useWindowWidth();
+  const jobAppDetailIdRef = useRef(jobAppDetailId);
 
   useEffect(() => {
     if ((windowWidth < 1024)) {
       setUseModal(true);
-      setIsOpen(jobAppDetailId !== null);
+      setIsOpen(jobAppDetailIdRef.current !== null);
     }
     else if (jobApps) {
       setUseModal(false);
       setIsOpen(false);
       setJobAppDetailId(jobApps[0].id);
     }
-  }, [windowWidth, jobAppDetailId, jobApps]);
+  }, [windowWidth, jobAppDetailIdRef, jobApps]);
+
+  useEffect(() => {
+    jobAppDetailIdRef.current = jobAppDetailId;
+  }, [jobAppDetailId]);
 
   useEffect(() => {
     if (!isOpen) setJobAppDetailId(null);
@@ -208,7 +210,7 @@ const JobApplications = () => {
 
   useEffect(() => {
     if ((windowWidth > 1024) && jobApps) setJobAppDetailId(jobApps[0].id);
-  }, [jobApps]);
+  }, [jobApps, windowWidth]);
 
   const handleViewJobAppDetail = (id) => {
     setJobAppDetailId(id);
@@ -217,27 +219,29 @@ const JobApplications = () => {
   return (
     <MasterLayout>
       <PageHeader title="Job Applications"></PageHeader>
-      <div className="lg:flex space-y-2 lg:space-x-2 lg:space-y-0">
-        <div className="lg:w-1/2">
-          <JobApplicationList
-            jobApps={jobApps}
-            jobAppDetailId={jobAppDetailId}
-            handleViewJobAppDetail={handleViewJobAppDetail}
-            isLoading={isLoading || isFetching}
-            onItemClick={() => setIsOpen(true)}
-          />
-        </div>
-        <div className="lg:w-1/2">
-          {jobAppDetailId 
-            ? <JobAppDetail 
-                id={jobAppDetailId}
-                useModal={useModal}
-                isOpen={isOpen}
-                setIsOpen={setIsOpen}  
+      {!isLoading && !jobApps
+        ? <NoDataFound />
+        : <div className="lg:flex space-y-2 lg:space-x-2 lg:space-y-0">
+            <div className="lg:w-1/2">
+              <JobApplicationList
+                jobApps={jobApps}
+                jobAppDetailId={jobAppDetailId}
+                handleViewJobAppDetail={handleViewJobAppDetail}
+                isLoading={isLoading || isFetching}
+                onItemClick={() => setIsOpen(true)}
               />
-            : ""}
-        </div>
-      </div>
+            </div>
+            <div className="lg:w-1/2">
+              {jobAppDetailId
+                ? <JobAppDetail
+                  id={jobAppDetailId}
+                  useModal={useModal}
+                  isOpen={isOpen}
+                  setIsOpen={setIsOpen}
+                />
+                : ""}
+            </div>
+          </div>}
     </MasterLayout>
   )
 }

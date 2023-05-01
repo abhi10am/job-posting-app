@@ -3,6 +3,7 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import Button from './form/Button';
 import Loader from './Loader';
+import NoDataFound from './NoDataFound';
 
 
 export const MasterNewItem = ({ handleCreate, type }) => {
@@ -85,10 +86,7 @@ const MasterList = ({ items, isLoading, handleUpdate, handleDelete }) => {
   const handleCancelEdit = () => setEditItemId(null);
 
   if (isLoading) return <Loader />
-
-  if (!isLoading && !items) return (
-    <div className="flex items-center justify-center">No data found</div>
-  )
+  if (!isLoading && !items) return <NoDataFound />
 
   return (
     <div className="space-y-[2px]">

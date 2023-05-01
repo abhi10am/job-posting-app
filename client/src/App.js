@@ -1,6 +1,5 @@
 import { Routes, Route } from "react-router-dom";
 import Register from "pages/auth/Register";
-import Home from "pages/Home";
 import Login from "pages/auth/Login";
 import ForgotPassword from "pages/auth/ForgotPassword";
 import ResetPassword from "pages/auth/ResetPassword";
@@ -13,6 +12,7 @@ import PostNewJob from "pages/admin/PostNewJob";
 import { AuthProvider } from "contexts/auth";
 import RequireAuth from "components/RequireAuth";
 import config from "config/config";
+import NotFoundPage from "pages/NotFoundPage";
 
 function App() {
   return (
@@ -20,7 +20,7 @@ function App() {
       <div className="bg-slate-200">
         <Routes>
           {/* Auth Routes */}
-          <Route path="/" element={<RequireAuth roles={[config.roles.ADMIN]}><Home /></RequireAuth>} />
+          <Route path="/" element={<Login />} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
           <Route path="forgot-password" element={<ForgotPassword />} />
@@ -43,7 +43,7 @@ function App() {
           </Route>
 
           {/* Other Route */}
-          <Route path="*" element={<div>404 Error</div>} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
     </AuthProvider>

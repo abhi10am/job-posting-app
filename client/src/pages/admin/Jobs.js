@@ -3,13 +3,14 @@ import CustomLink from 'components/CustomLink'
 import Loader from 'components/Loader'
 import Button from 'components/form/Button'
 import MasterLayout from 'components/layout/MasterLayout'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useGetJobByIdQuery, useGetJobsQuery } from 'store/apis/admin/job'
 import { JobList } from 'components/job/JobList'
 import PageHeader from 'components/PageHeader'
 import Modal from 'components/Modal'
 import useWindowWidth from 'hooks/windowWidth'
 import JobContent from 'components/job/JobContent'
+import NoDataFound from 'components/NoDataFound'
 
 
 const JobDetail = ({ id, useModal, isOpen, setIsOpen }) => {
@@ -34,18 +35,23 @@ const Jobs = () => {
   const [useModal, setUseModal] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const windowWidth = useWindowWidth();
+  const jobDetailIdRef = useRef(jobDetailId);
 
   useEffect(() => {
     if ((windowWidth < 1024)) {
       setUseModal(true);
-      setIsOpen(jobDetailId !== null);
+      setIsOpen(jobDetailIdRef.current !== null);
     }
     else if (jobs) {
       setUseModal(false);
       setIsOpen(false);
       setJobDetailId(jobs[0].id);
     }
-  }, [windowWidth, jobDetailId, jobs]);
+  }, [windowWidth, jobDetailIdRef, jobs]);
+
+  useEffect(() => {
+    jobDetailIdRef.current = jobDetailId;
+  }, [jobDetailId]);
 
   useEffect(() => {
     if (!isOpen) setJobDetailId(null);
@@ -53,7 +59,7 @@ const Jobs = () => {
 
   useEffect(() => {
     if ((windowWidth > 1024) && jobs) setJobDetailId(jobs[0].id);
-  }, [jobs]);
+  }, [jobs, windowWidth]);
 
   const handleViewJobDetail = (id) => {
     setJobDetailId(id);
@@ -65,28 +71,29 @@ const Jobs = () => {
         title="All Jobs" 
         actions={<CustomLink to="/admin/jobs/create"><Button type="button">Post New Job</Button></CustomLink>}
       ></PageHeader>
-
-      <div className="lg:flex space-y-2 lg:space-x-2 lg:space-y-0">
-        <div className="lg:w-1/2">
-          <JobList 
-            jobs={jobs} 
-            jobDetailId={jobDetailId}
-            handleViewJobDetail={handleViewJobDetail}
-            isLoading={isLoading || isFetching} 
-            onItemClick={() => setIsOpen(true)}
-          />
-        </div>
-        <div className="lg:w-1/2">
-          {jobDetailId 
-            ? <JobDetail 
-                id={jobDetailId} 
-                useModal={useModal} 
-                isOpen={isOpen} 
-                setIsOpen={setIsOpen} 
-              />
-            : ""}
-        </div>
-      </div>
+      {!isLoading && !jobs
+        ? <NoDataFound />
+        : <div className="lg:flex space-y-2 lg:space-x-2 lg:space-y-0">
+          <div className="lg:w-1/2">
+            <JobList 
+              jobs={jobs} 
+              jobDetailId={jobDetailId}
+              handleViewJobDetail={handleViewJobDetail}
+              isLoading={isLoading || isFetching} 
+              onItemClick={() => setIsOpen(true)}
+            />
+          </div>
+          <div className="lg:w-1/2">
+            {jobDetailId 
+              ? <JobDetail 
+                  id={jobDetailId} 
+                  useModal={useModal} 
+                  isOpen={isOpen} 
+                  setIsOpen={setIsOpen} 
+                />
+              : ""}
+          </div>
+        </div>}
     </MasterLayout>
   )
 }

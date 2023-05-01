@@ -13,6 +13,7 @@ const FormikFileInput = (props) => {
                       file:rounded-full file:border-0
                       file:text-sm file:font-semibold
                       file:bg-primary-100 file:text-primary-700 cursor-pointer"
+                      accept="application/pdf"
               {...field}
               {...props}
             />
