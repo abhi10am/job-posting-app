@@ -87,6 +87,7 @@ const JobAppContent = ({ data, isLoading }) => {
       document.body.appendChild(link);
       link.click();
     } catch (error) {
+      toast.error("Failed to download resume. Please try again later.");
       console.error(error);
     }
   };
