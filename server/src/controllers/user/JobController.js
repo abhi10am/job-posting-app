@@ -35,7 +35,7 @@ class JobController {
           type: true,
           JobApplication: {
             where: {
-              userId: 2 // TODO: get this from req
+              userId: req.user.id
             }
           },
         }

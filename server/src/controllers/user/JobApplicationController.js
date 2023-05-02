@@ -17,7 +17,7 @@ class JobApplicationController {
 
       const application = await prisma.jobApplication.create({
         data: {
-          userId: 2, // TODO: Should fetch from req
+          userId: req.user.id,
           jobId: jobId,
           resume: path,
           relevancyScore: await genericHelper.relevacyScore(path, job.skills.split(", "))

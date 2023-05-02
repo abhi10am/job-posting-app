@@ -6,7 +6,11 @@ class JobController {
 
   async list(req, res) {
     try {
-      const jobs = await prisma.job.findMany({ include: {
+      const jobs = await prisma.job.findMany({ 
+        where: {
+          adminId: req.user.id
+        },
+        include: {
           category: true,
           type: true,
         } 
@@ -60,7 +64,7 @@ class JobController {
           experience,
           description,
           salary,
-          adminId: 1, // TODO: get from req
+          adminId: req.user.id,
           categoryId: parseInt(category),
           typeId: parseInt(type),
           additionalDetails: JSON.stringify(additionalDetails),
