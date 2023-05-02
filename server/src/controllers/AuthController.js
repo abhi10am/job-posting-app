@@ -41,6 +41,7 @@ class AuthController {
   }
 
   async login (req, res) {
+    console.log(process.env.DATABASE_URL);
     try {
       // get user input
       const { email, password } = req.body;

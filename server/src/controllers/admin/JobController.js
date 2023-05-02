@@ -64,7 +64,7 @@ class JobController {
           experience,
           description,
           salary,
-          adminId: req.user.userId,
+          adminId: req.user.userId, 
           categoryId: parseInt(category),
           typeId: parseInt(type),
           additionalDetails: JSON.stringify(additionalDetails),

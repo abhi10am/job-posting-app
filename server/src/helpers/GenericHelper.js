@@ -15,7 +15,8 @@ class GenericHelper {
 
   async relevacyScore (path, skills) {
     const pdf = await PDFParser(fs.readFileSync(path));
-    const matches = _.intersection(_.words(_.toLower(pdf.text), /[\w'-]+/g), skills);
+    const lowerCaseSkills = skills.map(item => item.toLowerCase());
+    const matches = _.intersection(_.words(_.toLower(pdf.text), /[\w'-]+/g), lowerCaseSkills);
     return (matches.length == 0 || skills.length == 0) ? 0 : parseInt((matches.length / skills.length) * 100);
   }
 } 
