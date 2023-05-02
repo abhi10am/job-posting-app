@@ -35,7 +35,7 @@ class JobController {
           type: true,
           JobApplication: {
             where: {
-              userId: req.user.id
+              userId: req.user.userId
             }
           },
         }

@@ -8,7 +8,7 @@ class JobController {
     try {
       const jobs = await prisma.job.findMany({ 
         where: {
-          adminId: req.user.id
+          adminId: req.user.userId
         },
         include: {
           category: true,
